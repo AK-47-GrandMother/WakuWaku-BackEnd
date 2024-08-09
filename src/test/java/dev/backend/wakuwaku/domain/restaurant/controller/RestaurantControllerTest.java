@@ -2,6 +2,8 @@ package dev.backend.wakuwaku.domain.restaurant.controller;
 
 import com.epages.restdocs.apispec.MockMvcRestDocumentationWrapper;
 import com.epages.restdocs.apispec.ResourceSnippetParameters;
+import com.epages.restdocs.apispec.SimpleType;
+import dev.backend.wakuwaku.domain.restaurant.dto.response.Restaurants;
 import dev.backend.wakuwaku.domain.restaurant.entity.Restaurant;
 import dev.backend.wakuwaku.domain.restaurant.service.RestaurantService;
 import dev.backend.wakuwaku.global.infra.google.places.dto.*;
@@ -26,6 +28,7 @@ import java.util.List;
 
 import static com.epages.restdocs.apispec.ResourceDocumentation.parameterWithName;
 import static com.epages.restdocs.apispec.ResourceDocumentation.resource;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -49,6 +52,8 @@ class RestaurantControllerTest {
     private static final String SEARCH_WORD = "도쿄";
 
     private static final String NAME = "우동신";
+
+    private static final int TOTAL_PAGE = 5;
 
     private final List<Photo> photos = new ArrayList<>();
 
@@ -125,48 +130,53 @@ class RestaurantControllerTest {
     @DisplayName("Simple Info 조회. 즉, 사용자가 검색하여 얻는 데이터를 반환")
     void getSimpleInfoRestaurants() throws Exception {
         // given
-        List<Restaurant> restaurants = new ArrayList<>();
-        restaurants.add(new Restaurant(places));
+        List<Restaurant> restaurantList = new ArrayList<>();
+        restaurantList.add(new Restaurant(places));
 
-        given(restaurantService.getSimpleRestaurants(anyString())).willReturn(restaurants);
+        Restaurants restaurants = new Restaurants(restaurantList, TOTAL_PAGE);
+
+        given(restaurantService.getSimpleRestaurants(anyString(), anyInt())).willReturn(restaurants);
 
         // when & then
         mockMvc.perform(RestDocumentationRequestBuilders
                     .get(BASE_URL)
                     .queryParam("search", SEARCH_WORD)
+                    .queryParam("page", "1")
                 )
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("data[*].placeId").exists())
-                .andExpect(jsonPath("data[*].name").exists())
-                .andExpect(jsonPath("data[*].rating").exists())
-                .andExpect(jsonPath("data[*].userRatingsTotal").exists())
-                .andExpect(jsonPath("data[*].location.latitude").exists())
-                .andExpect(jsonPath("data[*].location.longitude").exists())
-                .andExpect(jsonPath("data[*].photoUrl").exists())
+                .andExpect(jsonPath("data.simpleInfoRestaurants[*].placeId").exists())
+                .andExpect(jsonPath("data.simpleInfoRestaurants[*].name").exists())
+                .andExpect(jsonPath("data.simpleInfoRestaurants[*].rating").exists())
+                .andExpect(jsonPath("data.simpleInfoRestaurants[*].userRatingsTotal").exists())
+                .andExpect(jsonPath("data.simpleInfoRestaurants[*].location.latitude").exists())
+                .andExpect(jsonPath("data.simpleInfoRestaurants[*].location.longitude").exists())
+                .andExpect(jsonPath("data.simpleInfoRestaurants[*].photoUrl").exists())
                 .andDo(MockMvcRestDocumentationWrapper.document("get simple info",
                         resource(ResourceSnippetParameters.builder()
                                 .tag("Get Simple Info")
                                 .summary("Get Simple Info By Search Word")
-                                .description("응답(data[]의 size) 개수가 최대 20개까지 가능함.")
+                                .description("응답(simpleInfoRestaurants[]의 size) 개수가 최대 10개까지 가능함.")
                                 .queryParameters(
-                                        parameterWithName("search").description("검색어 (장소명 혹은 지역명만 입력)")
+                                        parameterWithName("search").description("검색어 (장소명 혹은 지역명만 입력) (예시: 도쿄, 후쿠오카, 나가사키)"),
+                                        parameterWithName("page").type(SimpleType.INTEGER).description("페이지 번호").defaultValue(1).optional()
                                 )
                                 .responseFields(
                                         fieldWithPath("code").type(JsonFieldType.NUMBER).description("응답 시 반환되는 code 값"),
                                         fieldWithPath("message").type(JsonFieldType.STRING).description("응답 시 반환되는 메시지"),
-                                        fieldWithPath("data[].placeId").type(JsonFieldType.STRING).description("Details Info 에 활용할 식당의 Place Id"),
-                                        fieldWithPath("data[].name").type(JsonFieldType.STRING).description("식당 이름"),
-                                        fieldWithPath("data[].rating").type(JsonFieldType.NUMBER).optional().description("식당 별점"),
-                                        fieldWithPath("data[].userRatingsTotal").type(JsonFieldType.NUMBER).optional().description("식당 총 리뷰 수"),
-                                        fieldWithPath("data[].location.latitude").type(JsonFieldType.NUMBER).description("위도"),
-                                        fieldWithPath("data[].location.longitude").type(JsonFieldType.NUMBER).description("경도"),
-                                        fieldWithPath("data[].photoUrl").type(JsonFieldType.ARRAY).optional().description("식당 대표 사진 URL"))
+                                        fieldWithPath("data.simpleInfoRestaurants[].placeId").type(JsonFieldType.STRING).description("Details Info 에 활용할 식당의 Place Id"),
+                                        fieldWithPath("data.simpleInfoRestaurants[].name").type(JsonFieldType.STRING).description("식당 이름"),
+                                        fieldWithPath("data.simpleInfoRestaurants[].rating").type(JsonFieldType.NUMBER).optional().description("식당 별점"),
+                                        fieldWithPath("data.simpleInfoRestaurants[].userRatingsTotal").type(JsonFieldType.NUMBER).optional().description("식당 총 리뷰 수"),
+                                        fieldWithPath("data.simpleInfoRestaurants[].location.latitude").type(JsonFieldType.NUMBER).description("위도"),
+                                        fieldWithPath("data.simpleInfoRestaurants[].location.longitude").type(JsonFieldType.NUMBER).description("경도"),
+                                        fieldWithPath("data.simpleInfoRestaurants[].photoUrl").type(JsonFieldType.ARRAY).optional().description("식당 대표 사진 URL"),
+                                        fieldWithPath("data.totalPage").type(JsonFieldType.NUMBER).optional().description("이 검색어에 대한 총 페이지 수"))
                                 .build()
                         )
                        )
                 );
 
-        then(restaurantService).should().getSimpleRestaurants(anyString());
+        then(restaurantService).should().getSimpleRestaurants(anyString(), anyInt());
     }
 
     @Test

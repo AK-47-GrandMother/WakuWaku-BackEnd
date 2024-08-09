@@ -1,0 +1,20 @@
+service:
+  app:
+    image: wakuwaku240301/wakuwaku
+    container_name: wakuwaku
+    ports:
+      - 8080:8080
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    hostname: restaurant-info-redis
+    ports:
+      - 6379:6379
+    volumes:
+      - ./data/redis:/data
+      - /etc/redis/redis.conf:/usr/local/etc/redis/redis.conf
+    command: redis-server /usr/local/etc/redis/redis.conf
+    restart: always

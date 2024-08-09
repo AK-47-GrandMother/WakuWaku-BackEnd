@@ -1,13 +1,12 @@
 package dev.backend.wakuwaku.domain.restaurant.entity;
 
 import dev.backend.wakuwaku.domain.BaseEntity;
-import dev.backend.wakuwaku.global.infra.google.places.dto.Places;
 import dev.backend.wakuwaku.global.infra.google.places.dto.Photo;
+import dev.backend.wakuwaku.global.infra.google.places.dto.Places;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -36,7 +35,6 @@ public class Restaurant extends BaseEntity {
 
     private double rating;
 
-    @Builder
     public Restaurant(Places places) {
         this.placeId = places.getId();
         this.name = places.getDisplayName().getText();

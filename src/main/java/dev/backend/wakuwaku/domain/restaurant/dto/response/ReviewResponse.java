@@ -1,18 +1,18 @@
 package dev.backend.wakuwaku.domain.restaurant.dto.response;
 
 import dev.backend.wakuwaku.global.infra.google.places.dto.Review;
-import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class ReviewResponse {
-    private final String relativePublishTimeDescription;
-    private final float rating;
-    private final String text;
-    private final String authorName;
-    private final String authorProfileUrl;
+    private String relativePublishTimeDescription;
+    private float rating;
+    private String text;
+    private String authorName;
+    private String authorProfileUrl;
 
-    @Builder
     public ReviewResponse(Review review) {
         this.relativePublishTimeDescription = review.getRelativePublishTimeDescription();
         this.rating = review.getRating();

@@ -23,10 +23,9 @@ public enum ExceptionStatus {
 
     // google places exception
     INVALID_SEARCH_WORD(BAD_REQUEST, 4000, "검색어를 입력하지 않았습니다."),
-    NOT_EXISTED_NEXT_PAGE_TOKEN(BAD_REQUEST, 4001, "NEXT PAGE TOKEN 이 존재하지 않습니다."),
-    NONE_PHOTO_URL(NOT_FOUND, 4002, "PHOTO URL이 존재하지 않습니다."),
-    NOT_EXISTED_PLACE_ID(BAD_REQUEST, 4003, "PLACE ID 가 존재하지 않습니다."),
-    NOT_EXISTED_DETAILS_RESPONSE(BAD_REQUEST, 4004, "Details Response 가 존재하지 않습니다."),
+    NONE_PHOTO_URL(NOT_FOUND, 4001, "PHOTO URL이 존재하지 않습니다."),
+    NOT_EXISTED_PLACE_ID(BAD_REQUEST, 4002, "PLACE ID 가 존재하지 않습니다."),
+    NOT_EXISTED_DETAILS_RESPONSE(BAD_REQUEST, 4003, "Details Response 가 존재하지 않습니다."),
 
 
 

@@ -50,6 +50,20 @@ spring:
   mvc:
     static-path-pattern: /static/**
 
+  # redis
+  data:
+    redis:
+      host: 127.0.0.1
+      port: 6379
+      password:
+      # Redis 서버와의 연결 시간 제한
+      timeout: 3000
+
+      # Spring Data Redis에서 제공하는 RedisRepository 기능을 사용할지 여부를 결정하는 것.
+      # 해당 기능을 사용하지 않기 때문에 비활성화하여 불필요한 리소스 사용을 줄이고 테스트 실행 속도를 높인다.
+      repositories:
+        enabled: false
+
 # URL에 sessionId가 표시될 때, 표시하지 않기 위함
 server:
   servlet:
